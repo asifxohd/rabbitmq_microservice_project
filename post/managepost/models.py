@@ -11,7 +11,7 @@ class Posts(models.Model):
     
 
 class Comment(models.Model):
-    post = models.ForeignKey(Posts, on_delete=models.CASCADE)
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE , related_name='comments')
     comment = models.TextField()
 
     def __str__(self):
