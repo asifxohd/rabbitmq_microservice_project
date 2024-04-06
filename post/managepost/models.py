@@ -9,6 +9,13 @@ class Posts(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.TextField()
     
+
+class Comment(models.Model):
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE)
+    comment = models.TextField()
+
+    def __str__(self):
+        return f"Comment on {self.post.uuid}: {self.content}"
     
 @receiver(post_save, sender=Posts)
 def post_save_handler(sender, instance, created, **kwargs):

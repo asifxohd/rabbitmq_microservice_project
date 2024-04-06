@@ -2,7 +2,6 @@ from rest_framework import viewsets ,status
 from .models import Posts
 from .serializers import PostsSerializer
 from rest_framework.response import Response
-from .producer import publish_message
 
 
 class PostviewController(viewsets.ModelViewSet):

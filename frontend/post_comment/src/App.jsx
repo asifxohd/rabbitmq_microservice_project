@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import { BASE_URL_BACKUP, BASE_URL_COMMENT, BASE_URL_POSTS } from './constents';
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -8,28 +10,48 @@ function App() {
   const [comments, setComments] = useState({});
   const [newComment, setNewComment] = useState('');
 
-  const handlePostSubmit = () => {
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL_POSTS}/posts/`);
+        const fetchedPosts = response.data;
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    fetchPosts();
+  }, []); 
+
+  const handlePostSubmit = async () => {
     if (newPost.trim() !== '') {
-      const postId = Date.now().toString();
-      setPosts([...posts, { id: postId, content: newPost }]);
-      setComments({ ...comments, [postId]: [] });
-      setNewPost('');
+      try {
+        const response = await axios.post(`${BASE_URL_POSTS}/posts/`, { content: newPost });
+        const newPostData = response.data; 
+        setPosts([...posts, newPostData]);
+        setNewPost('');
+      } catch (error) {
+        console.error('Error adding post:', error);
+      }
     }
   };
 
-  const handleCommentSubmit = (postId) => {
+  const handleCommentSubmit = async (postId) => {
     if (newComment.trim() !== '') {
-      setComments({
-        ...comments,
-        [postId]: [...comments[postId], newComment],
-      });
-      setNewComment('');
+      try {
+        const response = await axios.post(`${BASE_URL_COMMENT}/comments/`, { post_id: postId, content: newComment, });
+        const newCommentData = response.data; 
+        setNewComment('');
+      } catch (error) {
+        console.error('Error adding comment:', error);
+      }
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="max-w-lg w-full p-8 bg-white rounded shadow-md">
+    <div className=" w-2/3 mx-auto h-screen bg-gray-100 ">
+      <div className=" w-full p-8 bg-white rounded shadow-md">
         <h1 className="text-2xl font-bold mb-4">Create a New Post</h1>
         <textarea
           className="w-full border border-gray-300 p-2 mb-4 rounded focus:outline-none focus:border-blue-500"
